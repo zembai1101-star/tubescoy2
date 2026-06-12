@@ -33,7 +33,7 @@
                 <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
                     <div class="card h-100 shadow-sm border-0 position-relative">
                         <div style="height: 180px; overflow: hidden; background: #e9ecef; border-radius: 4px 4px 0 0;">
-                            <img src="{{ $item->filepath }}" alt="{{ $item->original_name }}" class="w-100 h-100" style="object-fit: cover;">
+                            <img src="{{ asset(str_replace(url('/'), '', $item->filepath)) }}" alt="{{ $item->original_name }}" class="w-100 h-100" style="object-fit: cover;">
                         </div>
                         <div class="card-body p-2 bg-white">
                             <p class="text-truncate mb-1 small text-dark font-weight-bold" title="{{ $item->original_name }}">
@@ -44,7 +44,7 @@
                             </p>
                         </div>
                         <div class="card-footer p-2 bg-light d-flex justify-content-between align-items-center">
-                            <button class="btn btn-xs btn-outline-secondary" onclick="copyToClipboard('{{ url($item->filepath) }}')" title="Salin URL Gambar">
+                            <button class="btn btn-xs btn-outline-secondary" onclick="copyToClipboard('{{ asset(str_replace(url('/'), '', $item->filepath)) }}')" title="Salin URL Gambar">
                                 <i class="fas fa-copy mr-1"></i> Copy URL
                             </button>
                             
@@ -76,18 +76,18 @@
                 <h5 class="modal-title"><i class="fas fa-upload mr-2"></i>Upload File Gambar</h5>
                 <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">&times;</button>
             </div>
-            <form action="{{ route('media.store') }}" method="POST" enctype="multipart/form-data">
+            <form id="formUpload" action="{{ route('media.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
                     <div class="form-group">
                         <label>Pilih File Gambar</label>
-                        <input type="file" name="image" class="form-control-file border p-2 w-100 rounded" required>
+                        <input type="file" name="image" id="inputGambar" class="form-control-file border p-2 w-100 rounded" required>
                         <small class="text-muted d-block mt-1">Format: JPG, JPEG, PNG, WEBP, GIF (Maks. 2MB)</small>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-cloud-upload-alt mr-1"></i> Mulai Upload</button>
+                    <button type="submit" id="btnSubmit" class="btn btn-primary"><i class="fas fa-cloud-upload-alt mr-1"></i> Mulai Upload</button>
                 </div>
             </form>
         </div>
@@ -95,6 +95,7 @@
 </div>
 
 <script>
+// Fungsi untuk menyalin URL ke Clipboard
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(function() {
         alert('URL Gambar berhasil disalin ke clipboard!');
@@ -102,5 +103,35 @@ function copyToClipboard(text) {
         alert('Gagal menyalin URL: ', err);
     });
 }
+
+// Fitur Pengaman Form Upload
+document.addEventListener("DOMContentLoaded", function() {
+    var form = document.getElementById('formUpload');
+    var inputGambar = document.getElementById('inputGambar');
+    var btnSubmit = document.getElementById('btnSubmit');
+
+    // 1. Cek ukuran file langsung di browser sebelum dikirim (Maks 2MB)
+    if (inputGambar) {
+        inputGambar.addEventListener('change', function() {
+            var maxSize = 2 * 1024 * 1024; // 2MB dalam bytes
+            if (this.files && this.files[0]) {
+                if (this.files[0].size > maxSize) {
+                    alert('Waduh, ukuran gambar terlalu besar! Maksimal ukuran file adalah 2MB.');
+                    this.value = ''; // Mengosongkan kembali input file
+                }
+            }
+        });
+    }
+
+    // 2. Kunci tombol submit setelah diklik pertama kali (Anti klik ganda)
+    if (form) {
+        form.addEventListener('submit', function() {
+            if (btnSubmit) {
+                btnSubmit.disabled = true;
+                btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Menyimpan gambar...';
+            }
+        });
+    }
+});
 </script>
 @endsection

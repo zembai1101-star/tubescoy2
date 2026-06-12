@@ -2,10 +2,17 @@
 
 use Illuminate\Support\Facades\Route;
 
-// PASTIKAN JALURNYA DITULIS LENGKAP SEPERTI INI:
-use App\Http\Controllers\PageController;
 // ==========================================================
-// 1. DASHBOARD UTAMA
+// KELOMPOK IMPORT CONTROLLER
+// ==========================================================
+use App\Http\Controllers\PageController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\MediaController;
+use App\Http\Controllers\CommentController;
+
+// ==========================================================
+// 1. DASHBOARD UTAMA ADMIN
 // ==========================================================
 Route::get('/', function () {
     return view('dashboard');
@@ -13,72 +20,68 @@ Route::get('/', function () {
 
 
 // ==========================================================
-// 2. MANAJEMEN KONTEN
+// 2. TEMPLATE EDEN / HALAMAN DEPAN PUBLIK (TARUH DI SINI AGAR AMAN)
 // ==========================================================
+// Rute utama blog publik Eden
+Route::get('/home', [PostController::class, 'blogHome'])->name('blog.home');
 
-use App\Http\Controllers\PostController;
+// Rute untuk membaca detail artikel secara utuh
+Route::get('/home/{slug}', [PostController::class, 'blogShow'])->name('blog.show');
+
+
+// ==========================================================
+// 3. MANAJEMEN KONTEN (PANEL ADMIN)
+// ==========================================================
 
 // --- Artikel / Post ---
-// 1. Menampilkan Semua Artikel (Publish)
 Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
-
-// 2. Menampilkan Form Tulis Artikel Baru (Menggunakan Controller)
 Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
-
-// 3. Menampung Data Form saat Klik Tombol Simpan (Method POST)
 Route::post('/posts/store', [PostController::class, 'store'])->name('posts.store');
-
-// 6. Menampilkan halaman form edit artikel
 Route::get('/posts/{id}/edit', [PostController::class, 'edit'])->name('posts.edit');
-
-// 7. Menyimpan perubahan data artikel (Method PUT)
 Route::put('/posts/{id}', [PostController::class, 'update'])->name('posts.update');
-
-// 8. Menghapus data artikel (Method DELETE)
 Route::delete('/posts/{id}', [PostController::class, 'destroy'])->name('posts.destroy');
-
-// 4. Menampilkan Semua Artikel yang Masih Berstatus Draft
 Route::get('/posts/draft', [PostController::class, 'draft'])->name('posts.draft');
-
-// 5. DI SINI TEMPATNYA: Mengubah status draft menjadi publish otomatis (Method PUT)
 Route::put('/posts/{id}/publish', [PostController::class, 'publish'])->name('posts.publish');
-
-
-// --- Kategori & Galeri Media ---
-Route::get('/categories', function () { return view('categories'); })->name('categories.index');
-Route::get('/media', function () { return view('media'); })->name('media.index');
-
-// --- CRUD Halaman Statis (Disinkronkan dengan deklarasi USE di atas) ---
-Route::get('/pages', [PageController::class, 'index'])->name('pages.index');
-Route::post('/pages/store', [PageController::class, 'store'])->name('pages.store');
-Route::put('/pages/{id}', [PageController::class, 'update'])->name('pages.update');
-Route::delete('/pages/{id}', [PageController::class, 'destroy'])->name('pages.destroy');
-// Wajib ditaruh di paling bawah file agar tidak memblokir URL admin
-Route::get('/{slug}', [PageController::class, 'show'])->name('pages.show');
-
-// ==========================================================
-// 3. INTERAKSI & PENGUNJUNG
-// ==========================================================
-Route::get('/comments', function () { return view('comments'); })->name('comments.index');
-Route::get('/messages', function () { return view('messages'); })->name('messages.index');
-
-
-// ==========================================================
-// 4. PENGATURAN SISTEM
-// ==========================================================
-Route::get('/users', function () { return view('users'); })->name('users.index');
-Route::get('/settings', function () { return view('settings'); })->name('settings.index');
-
-use App\Http\Controllers\CategoryController;
 
 // --- Kategori & Tag ---
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
 Route::post('/categories/store', [CategoryController::class, 'store'])->name('categories.store');
-Route::put('/categories/{id}', [CategoryController::class, 'update'])->name('categories.update'); // <-- TAMBAHKAN INI
+Route::put('/categories/{id}', [CategoryController::class, 'update'])->name('categories.update');
 Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->name('categories.destroy');
 
-use App\Http\Controllers\MediaController;
-
+// --- Galeri Media ---
 Route::get('/media', [MediaController::class, 'index'])->name('media.index');
 Route::post('/media', [MediaController::class, 'store'])->name('media.store');
 Route::delete('/media/{id}', [MediaController::class, 'destroy'])->name('media.destroy');
+
+// --- CRUD Halaman Statis ---
+Route::get('/pages', [PageController::class, 'index'])->name('pages.index');
+Route::post('/pages/store', [PageController::class, 'store'])->name('pages.store');
+Route::put('/pages/{id}', [PageController::class, 'update'])->name('pages.update');
+Route::delete('/pages/{id}', [PageController::class, 'destroy'])->name('pages.destroy');
+
+
+// ==========================================================
+// 4. INTERAKSI & PENGUNJUNG
+// ==========================================================
+
+// --- Komentar ---
+Route::get('/comments', [CommentController::class, 'index'])->name('comments.index');
+Route::delete('/comments/{id}', [CommentController::class, 'destroy'])->name('comments.destroy');
+
+// --- Pesan Kontak ---
+Route::get('/messages', function () { return view('messages'); })->name('messages.index');
+
+
+// ==========================================================
+// 5. PENGATURAN SISTEM
+// ==========================================================
+Route::get('/users', function () { return view('users'); })->name('users.index');
+Route::get('/settings', function () { return view('settings'); })->name('settings.index');
+
+
+// ==========================================================
+// 6. RUTE DINAMIS SAPU JAGAT (WAJIB PALING BAWAH / AKHIR FILE!)
+// ==========================================================
+// Sengaja ditaruh paling bawah agar tidak memblokir /home maupun rute admin di atasnya
+Route::get('/{slug}', [PageController::class, 'show'])->name('pages.show');

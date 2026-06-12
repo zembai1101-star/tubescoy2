@@ -21,59 +21,71 @@
                             <h3 class="card-title">Formulir Artikel</h3>
                         </div>
 
-                        <form action="{{ route('posts.store') }}" method="POST">
+                        <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="card-body">
 
                                 <div class="form-group">
-                                    <label for="title">Judul Artikel</label>
-                                    <input type="text" name="title" class="form-control" id="title"
-                                        placeholder="Masukkan judul artikel..." required>
+                                    <label>Judul Artikel</label>
+                                    <input type="text" name="title" class="form-control" placeholder="Masukkan judul..."
+                                        required>
                                 </div>
+
                                 <div class="form-group">
-                                    <label for="category_id">Kategori Artikel</label>
-                                    <select name="category_id" id="category_id" class="form-control">
-                                        <option value="">-- Tanpa Kategori --</option>
-                                        @foreach($categories as $cat)
-                                            <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                                    <label>Kategori</label>
+                                    <select name="category_id" class="form-control" required>
+                                        <option value="">-- Pilih Kategori --</option>
+                                        @foreach($categories as $category)
+                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
 
                                 <div class="form-group">
-                                    <label>Pilih Tag Artikel</label>
-                                    <div class="d-flex flex-wrap">
+                                    <label>Tags (Pilih beberapa jika ada)</label>
+                                    <div class="row">
                                         @foreach($tags as $tag)
-                                            <div class="custom-control custom-checkbox mr-3 mb-2">
-                                                <input class="custom-control-input" type="checkbox" name="tags[]"
-                                                    id="tag{{ $tag->id }}" value="{{ $tag->id }}">
-                                                <label for="tag{{ $tag->id }}"
-                                                    class="custom-control-label font-weight-normal">#{{ $tag->name }}</label>
+                                            <div class="col-md-3">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" type="checkbox" name="tags[]"
+                                                        id="tag-{{ $tag->id }}" value="{{ $tag->id }}">
+                                                    <label for="tag-{{ $tag->id }}"
+                                                        class="custom-control-label">#{{ $tag->name }}</label>
+                                                </div>
                                             </div>
                                         @endforeach
                                     </div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="status">Opsi Penerbitan</label>
-                                    <select name="status" id="status" class="form-control" required>
-                                        <option value="publish">Langsung Terbitkan (Publish)</option>
-                                        <option value="draft">Simpan sebagai Draft</option>
+                                    <label>Thumbnail / Foto Artikel</label>
+                                    <div class="input-group">
+                                        <div class="custom-file">
+                                            <input type="file" name="image" class="custom-file-input" id="exampleInputFile"
+                                                accept="image/*">
+                                            <label class="custom-file-label" for="exampleInputFile">Pilih gambar...</label>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">Format: JPG, PNG, WEBP. Maks: 2MB</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Status Penerbitan</label>
+                                    <select name="status" class="form-control" required>
+                                        <option value="publish">Publish (Langsung Tampil)</option>
+                                        <option value="draft">Draft (Simpan Sementara)</option>
                                     </select>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="content">Isi Artikel</label>
-                                    <textarea name="content" id="content" class="form-control" rows="10"
-                                        placeholder="Tuliskan isi artikel kamu di sini..." required></textarea>
+                                    <label>Konten</label>
+                                    <textarea name="content" id="editor" class="form-control" rows="5"
+                                        placeholder="Tulis isi artikel di sini..."></textarea>
                                 </div>
 
                             </div>
-
-                            <div class="card-footer bg-white text-right">
-                                <a href="{{ route('posts.index') }}" class="btn btn-default mr-2">Batal</a>
-                                <button type="submit" class="btn btn-success"><i class="fas fa-save mr-1"></i> Simpan
-                                    Artikel</button>
+                            <div class="card-footer">
+                                <button type="submit" class="btn btn-primary">Terbitkan Artikel</button>
                             </div>
                         </form>
 
