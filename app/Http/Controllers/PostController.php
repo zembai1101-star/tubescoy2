@@ -46,19 +46,17 @@ class PostController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048'
         ]);
 
-        // Sesuai kodingan asli kamu, ditulis manual satu per satu + disisipkan image
         $post = Post::create([
             'title' => $request->title,
             'slug' => Str::slug($request->title),
             'content' => $request->input('content'),
             'status' => $request->status,
-            'category_id' => $request->category_id, // Kategori kamu tetap ada di sini!
+            'category_id' => $request->category_id,
             'image' => $request->hasFile('image') ? $request->file('image')->store('uploads/posts', 'public') : null
         ]);
 
-        // Menyimpan hubungan relasi Many-to-Many ke tabel pivot post_tag
         if ($request->has('tags')) {
-            $post->tags()->sync($request->tags); // Tag kamu tetap aman diproses di sini!
+            $post->tags()->sync($request->tags);
         }
 
         if ($request->status == 'draft') {
@@ -104,16 +102,14 @@ class PostController extends Controller
 
         $post = Post::findOrFail($id);
 
-        // Menyiapkan data teks untuk diupdate
         $updateData = [
             'title' => $request->title,
             'slug' => Str::slug($request->title),
             'content' => $request->input('content'),
             'status' => $request->status,
-            'category_id' => $request->category_id, // Kategori aman ter-update
+            'category_id' => $request->category_id,
         ];
 
-        // Logika kelola foto saat update
         if ($request->hasFile('image')) {
             if ($post->image) {
                 Storage::disk('public')->delete($post->image);
@@ -123,9 +119,8 @@ class PostController extends Controller
 
         $post->update($updateData);
 
-        // Menyinkronkan ulang data tag
         if ($request->has('tags')) {
-            $post->tags()->sync($request->tags); // Tag aman tersinkronisasi kembali
+            $post->tags()->sync($request->tags);
         } else {
             $post->tags()->detach();
         }
@@ -151,24 +146,33 @@ class PostController extends Controller
         return redirect()->back()->with('success', 'Artikel berhasil dihapus!');
     }
 
+    // FIX DI SINI: Digabung agar ketika detail artikel dibuka, hitungan klik bertambah otomatis
     public function blogShow($slug)
     {
-        // Cari artikel di database yang slug-nya cocok
         $post = Post::with(['category', 'tags'])->where('slug', $slug)->firstOrFail();
 
-        // Lempar data artikel tersebut ke file view bernama blog-detail.blade.php
+        // Tambahkan fitur hitung klik di sini
+        $post->increment('views');
+
         return view('blog-detail', compact('post'));
     }
 
-    // Tambahan Fungsi Tampilan Home Pengunjung (Eden Theme)
+    // FIX DI SINI: Tempat menaruh logika pengambilan data artikel populer
     public function blogHome()
     {
-        // Mengambil semua artikel berstatus publish
+        // 1. Mengambil semua artikel biasa untuk list horizontal bawah
         $posts = Post::with(['category', 'tags'])
                      ->where('status', 'publish')
                      ->latest()
                      ->get();
-                     
-        return view('blog-home', compact('posts'));
+
+        // 2. AMBIL 3 ARTIKEL TERPOPULER BERDASARKAN VIEWS TERBANYAK
+        $popular_posts = Post::where('status', 'publish')
+                             ->orderBy('views', 'desc')
+                             ->take(3)
+                             ->get();
+
+        // 3. Kirim data posts DAN popular_posts ke file index.blade.php
+        return view('index', compact('posts', 'popular_posts'));
     }
 }

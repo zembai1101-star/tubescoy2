@@ -15,17 +15,16 @@ use App\Http\Controllers\CommentController;
 // 1. DASHBOARD UTAMA ADMIN
 // ==========================================================
 Route::get('/', function () {
-    return view('dashboard');
+return view('dashboard');
 })->name('admin.dashboard');
 
 
 // ==========================================================
 // 2. TEMPLATE EDEN / HALAMAN DEPAN PUBLIK (TARUH DI SINI AGAR AMAN)
 // ==========================================================
-// Rute utama blog publik Eden
-Route::get('/home', [PostController::class, 'blogHome'])->name('blog.home');
+Route::get('/home', [PostController::class, 'blogHome'])->name('index.home');
 
-// Rute untuk membaca detail artikel secara utuh
+// Rute detail artikel
 Route::get('/home/{slug}', [PostController::class, 'blogShow'])->name('blog.show');
 
 
@@ -85,3 +84,6 @@ Route::get('/settings', function () { return view('settings'); })->name('setting
 // ==========================================================
 // Sengaja ditaruh paling bawah agar tidak memblokir /home maupun rute admin di atasnya
 Route::get('/{slug}', [PageController::class, 'show'])->name('pages.show');
+
+// Rute untuk melihat detail artikel berdasarkan slug-nya
+Route::get('/blog/{slug}', [PostController::class, 'blogShow'])->name('blog.show');
