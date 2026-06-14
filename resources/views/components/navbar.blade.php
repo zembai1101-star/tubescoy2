@@ -8,13 +8,13 @@
     
     <li class="nav-item d-none d-sm-inline-block">
       <a href="{{ route('posts.index') }}" class="nav-link">
-        <i class="fas fa-tachometer-alt mr-1"></i> Dashboard Admin
+        <i class="fas fa-tachometer-alt mr-1"></i> Admin
       </a>
     </li>
 
     <li class="nav-item d-none d-sm-inline-block">
       <a href="{{ route('index.home') }}" class="nav-link" target="_blank">
-        <i class="fas fa-globe mr-1"></i> Tampilan Publik
+        <i class="fas fa-globe mr-1"></i> publik
       </a>
     </li>
   </ul>

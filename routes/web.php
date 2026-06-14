@@ -15,17 +15,21 @@ use App\Http\Controllers\CommentController;
 // 1. DASHBOARD UTAMA ADMIN
 // ==========================================================
 Route::get('/', function () {
-return view('dashboard');
+    return view('dashboard');
 })->name('admin.dashboard');
 
 
 // ==========================================================
-// 2. TEMPLATE EDEN / HALAMAN DEPAN PUBLIK (TARUH DI SINI AGAR AMAN)
+// 2. TEMPLATE EDEN / HALAMAN DEPAN PUBLIK (Frontend)
 // ==========================================================
+// Rute utama halaman depan (menangani pencarian juga)
 Route::get('/home', [PostController::class, 'blogHome'])->name('index.home');
 
-// Rute detail artikel
-Route::get('/home/{slug}', [PostController::class, 'blogShow'])->name('blog.show');
+// Rute untuk melihat detail artikel berdasarkan slug-nya (Ditaruh di sini agar aman)
+Route::get('/blog/{slug}', [PostController::class, 'blogShow'])->name('blog.show');
+
+// Rute detail artikel alternatif bawaan kamu
+Route::get('/home/{slug}', [PostController::class, 'blogShow'])->name('blog.show.alt');
 
 
 // ==========================================================
@@ -82,8 +86,20 @@ Route::get('/settings', function () { return view('settings'); })->name('setting
 // ==========================================================
 // 6. RUTE DINAMIS SAPU JAGAT (WAJIB PALING BAWAH / AKHIR FILE!)
 // ==========================================================
-// Sengaja ditaruh paling bawah agar tidak memblokir /home maupun rute admin di atasnya
-Route::get('/{slug}', [PageController::class, 'show'])->name('pages.show');
+use App\Http\Controllers\ContactController;
 
-// Rute untuk melihat detail artikel berdasarkan slug-nya
-Route::get('/blog/{slug}', [PostController::class, 'blogShow'])->name('blog.show');
+// 1. TARUH RUTE KONTAK DI ATAS
+// Rute untuk Publik (Halaman Publik)
+Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+
+
+// Pastikan URL-nya adalah '/messages' sesuai dengan yang dipanggil sidebar kamu!
+Route::get('/messages', [ContactController::class, 'adminIndex'])->name('messages.index');
+
+// Rute untuk hapus pesan
+Route::delete('/messages/{id}', [ContactController::class, 'destroy'])->name('admin.contacts.destroy');
+
+
+// 2. TARUH RUTE SLUG INI DI PALING BAWAH FILE WEB.PHP (Beneran paling bawah setelah rute lain selesai)
+Route::get('/{slug}', [PageController::class, 'show'])->name('pages.show');

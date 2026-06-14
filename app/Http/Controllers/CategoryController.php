@@ -26,9 +26,17 @@ class CategoryController extends Controller
             'type' => 'required|in:category,tag',
         ]);
 
+        // Terapkan logika anti-bentrok juga saat membuat data baru biar adil
+        $slug = Str::slug($request->name);
+        $cek_slug = Category::where('slug', $slug)->exists();
+
+        if ($cek_slug) {
+            $slug = $slug . '-' . rand(100, 999);
+        }
+
         Category::create([
             'name' => $request->name,
-            'slug' => Str::slug($request->name),
+            'slug' => $slug,
             'type' => $request->type,
         ]);
 
@@ -43,7 +51,8 @@ class CategoryController extends Controller
 
         return redirect()->back()->with('success', 'Data berhasil dihapus!');
     }
-    // Memperbarui nama kategori atau tag
+
+    // Memperbarui nama kategori atau tag (SUDAH DIGABUNG DENGAN LOGIKA ANTI-BENTROK)
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -51,11 +60,24 @@ class CategoryController extends Controller
         ]);
 
         $category = Category::findOrFail($id);
+        
+        // Buat slug dasar dari nama inputan
+        $slug = Str::slug($request->name);
+
+        // TRIK ANTI BENTROK: Cek apakah slug ini sudah dipakai oleh KATEGORI LAIN
+        $cek_slug = Category::where('slug', $slug)->where('id', '!=', $id)->exists();
+
+        // Kalau ternyata sudah ada yang pakai, kita tambahkan angka random di belakangnya
+        if ($cek_slug) {
+            $slug = $slug . '-' . rand(100, 999); 
+        }
+
         $category->update([
             'name' => $request->name,
-            'slug' => \Illuminate\Support\Str::slug($request->name),
+            'slug' => $slug,
         ]);
 
-        return redirect()->back()->with('success', 'Perubahan berhasil disimpan!');
+        // Menggunakan redirect()->back() agar posisi halaman admin tidak loncat, tetap di tempat semula
+        return redirect()->back()->with('success', 'Kategori/Tag berhasil diperbarui!');
     }
 }

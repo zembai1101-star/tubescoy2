@@ -146,7 +146,7 @@ class PostController extends Controller
         return redirect()->back()->with('success', 'Artikel berhasil dihapus!');
     }
 
-    // FIX DI SINI: Digabung agar ketika detail artikel dibuka, hitungan klik bertambah otomatis
+    // Ketika detail artikel dibuka, hitungan klik bertambah otomatis
     public function blogShow($slug)
     {
         $post = Post::with(['category', 'tags'])->where('slug', $slug)->firstOrFail();
@@ -157,22 +157,37 @@ class PostController extends Controller
         return view('blog-detail', compact('post'));
     }
 
-    // FIX DI SINI: Tempat menaruh logika pengambilan data artikel populer
-    public function blogHome()
+    // MENAMPILKAN HALAMAN UTAMA FRONTEND (EDER MAGAZINE) + LOGIKA PENCARIAN & SIDEBAR
+    public function blogHome(Request $request)
     {
-        // 1. Mengambil semua artikel biasa untuk list horizontal bawah
-        $posts = Post::with(['category', 'tags'])
-                     ->where('status', 'publish')
-                     ->latest()
-                     ->get();
+        // 1. Ambil data kata kunci pencarian dari navbar hitam
+        $search = $request->input('search');
 
-        // 2. AMBIL 3 ARTIKEL TERPOPULER BERDASARKAN VIEWS TERBANYAK
-        $popular_posts = Post::where('status', 'publish')
-                             ->orderBy('views', 'desc')
-                             ->take(3)
-                             ->get();
+        // 2. Ambil data Artikel Terbaru (Status wajib publish)
+        $postsQuery = Post::with('category')->where('status', 'publish');
 
-        // 3. Kirim data posts DAN popular_posts ke file index.blade.php
-        return view('index', compact('posts', 'popular_posts'));
+        // Jika user mengetik sesuatu di kolom search, saring judul atau kontennya
+        if ($search) {
+            $postsQuery->where(function($query) use ($search) {
+                $query->where('title', 'LIKE', "%{$search}%")
+                      ->orWhere('content', 'LIKE', "%{$search}%");
+            });
+        }
+        $posts = $postsQuery->latest()->get();
+
+        // 3. Ambil data Artikel Populer Bulan Ini (Diurutkan berdasarkan views terbanyak)
+        $popularQuery = Post::with('category')->where('status', 'publish');
+        
+        if ($search) {
+            $popularQuery->where('title', 'LIKE', "%{$search}%");
+        }
+        // Mengambil maksimal 3 artikel populer teratas
+        $popular_posts = $popularQuery->orderBy('views', 'desc')->take(3)->get();
+
+        // 4. Ambil semua data kategori untuk bagian sidebar kanan
+        $categories = Category::where('type', 'category')->get();
+
+        // Kirimkan semua data ke halaman utama template depan kamu (home.blade.php)
+       return view('index', compact('posts', 'popular_posts', 'categories', 'search'));
     }
 }
