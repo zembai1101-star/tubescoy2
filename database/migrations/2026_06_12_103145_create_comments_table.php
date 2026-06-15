@@ -11,14 +11,11 @@ return new class extends Migration
      */
     public function up(): void
 {
-    Schema::create('comments', function (Blueprint $table) {
-        $table->id();
-        // Hubungkan ke id postingan/artikel (sesuaikan 'post_id' jika nama tabel artikelmu berbeda)
-        $table->foreignId('post_id')->constrained()->onDelete('cascade'); 
-        $table->string('name');         // Nama komentator
-        $table->string('email');        // Email komentator
-        $table->text('comment');        // Isi teks komentar
-        $table->timestamps();
+    Schema::table('comments', function (Blueprint $table) {
+        // Menambahkan kolom body jika memang belum ada di database
+        if (!Schema::hasColumn('comments', 'body')) {
+            $table->text('body')->after('user_id');
+        }
     });
 }
 };

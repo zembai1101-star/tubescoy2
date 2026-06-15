@@ -64,8 +64,69 @@
                         </div>
                     @endif
 
-                </div>
-            </div>
+                    <hr class="my-5" style="border-top: 1px dashed #ddd;">
+
+                    <div class="comment-section mt-4">
+                        <h4 class="mb-4 font-weight-bold" style="color: #222;">
+                            <i class="fa fa-comments text-muted mr-2"></i> Komentar ({{ $post->comments->count() }})
+                        </h4>
+
+                        @if(session('success'))
+                            <div class="alert alert-success p-2 mb-3" style="font-size: 14px;"><i class="fa fa-check-circle"></i> {{ session('success') }}</div>
+                        @endif
+                        @if(session('error'))
+                            <div class="alert alert-danger p-2 mb-3" style="font-size: 14px;"><i class="fa fa-exclamation-circle"></i> {{ session('error') }}</div>
+                        @endif
+
+                        @forelse($post->comments as $comment)
+                            <div class="media p-3 mb-3" style="background: #f8f9fa; border-radius: 8px; border-left: 4px solid {{ $comment->user->role === 'admin' ? '#28a745' : '#007bff' }};">
+                                <div class="media-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="mt-0 mb-0 font-weight-bold" style="font-size: 15px;">
+                                            <i class="fa {{ $comment->user->role === 'admin' ? 'fa-user-secret text-success' : 'fa-user text-primary' }} mr-1"></i> 
+                                            <span class="{{ $comment->user->role === 'admin' ? 'text-success' : 'text-dark' }}">{{ $comment->user->name }}</span>
+                                            
+                                            @if($comment->user->role === 'admin') 
+                                                <span class="badge badge-success px-2 ml-1" style="font-size: 10px; text-transform: uppercase;">Admin</span> 
+                                            @endif
+                                        </h6>
+                                        <small class="text-muted font-italic" style="font-size: 12px;">{{ $comment->created_at->diffForHumans() }}</small>
+                                    </div>
+                                    <p class="mb-0 text-secondary" style="font-size: 15px; line-height: 1.5;">{{ $comment->comment }}</p>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="text-center py-4 mb-4" style="background: #f8f9fa; border-radius: 8px; border: 1px dashed #ccc;">
+                                <p class="text-muted font-italic mb-0" style="font-size: 14px;">Belum ada komentar di artikel ini. Yuk, jadi yang pertama memberikan tanggapan!</p>
+                            </div>
+                        @endforelse
+
+                        <div class="card mt-4 border-0" style="background: #f1f3f5; border-radius: 8px;">
+                            <div class="card-body p-4">
+                                <h5 class="card-title font-weight-bold mb-3" style="color: #333;"><i class="fa fa-pencil mr-1"></i> Bagikan Tanggapan Kamu</h5>
+                                
+                                @auth
+                                    <form action="{{ route('comment.store', $post->id) }}" method="POST">
+                                        @csrf
+                                        <div class="form-group mb-3">
+                                            <textarea name="body" rows="3" class="form-control" style="border-radius: 6px; font-size: 15px; border: 1px solid #ccc;" placeholder="Ketik komentar positif kamu di sini..." required></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary font-weight-bold px-4" style="background-color: #007bff; border: none; border-radius: 4px; font-size: 14px;">
+                                            <i class="fa fa-paper-plane mr-1"></i> Kirim Komentar
+                                        </button>
+                                    </form>
+                                @else
+                                    <div class="text-center py-2">
+                                        <p class="text-muted mb-3" style="font-size: 14px;">Kamu harus masuk ke dalam akun terlebih dahulu untuk menuliskan komentar.</p>
+                                        <a href="{{ route('login') }}" class="btn btn-outline-primary btn-sm font-weight-bold px-4" style="border-radius: 4px;">
+                                            <i class="fa fa-sign-in"></i> Login Sekarang
+                                        </button>
+                                    </div>
+                                @endauth
+                            </div>
+                        </div>
+                    </div>
+                    </div> </div>
         </div>
     </div>
 

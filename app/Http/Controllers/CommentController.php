@@ -2,37 +2,56 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\Comment; // <-- WAJIB IMPORT MODEL COMMENT
+use App\Models\Comment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
     /**
-     * Menampilkan semua daftar komentar di Admin Panel
+     * Menampilkan semua komentar di halaman Dashboard Admin
      */
     public function index()
     {
-        // Mengambil komentar terbaru beserta data artikel (post) terkait.
-        // Menggunakan whereHas agar jika ada artikel yang telanjur dihapus, komentarnya tidak bikin web crash.
-        $comments = Comment::whereHas('post')->with('post')->latest()->get();
+        // Mengambil semua komentar berikut data post terkait, diurutkan dari yang terbaru
+        $comments = Comment::with('post')->latest()->get();
 
-        // Mengirim data ke halaman resources/views/comments.blade.php
+        // Mengarahkan ke file view admin yang barusan kamu kirim kodenya
         return view('comments', compact('comments'));
     }
 
     /**
-     * Menghapus komentar toxic atau spam
+     * Menyimpan komentar baru dari pengunjung web
+     */
+    public function store(Request $request, $postId)
+    {
+        if (!Auth::check()) {
+            return back()->with('error', 'Kamu harus login terlebih dahulu untuk mengirim komentar!');
+        }
+
+        $request->validate([
+            'body' => 'required|string|max:1000',
+        ]);
+
+        Comment::create([
+            'post_id' => $postId,
+            'user_id' => Auth::id(),
+            'comment' => $request->body,
+            'name'    => Auth::user()->name,  
+            'email'   => Auth::user()->email, 
+        ]);
+
+        return back()->with('success', 'Komentar kamu berhasil diterbitkan!');
+    }
+
+    /**
+     * Menghapus komentar lewat tombol aksi di Dashboard Admin
      */
     public function destroy($id)
     {
-        // Cari data komentar berdasarkan ID, jika tidak ada langsung lempar eror 404
         $comment = Comment::findOrFail($id);
-        
-        // Eksekusi hapus dari database
         $comment->delete();
 
-        // Kembalikan ke halaman sebelumnya dengan pesan sukses
-        return redirect()->back()->with('success', 'Komentar netizen yang toxic berhasil dimusnahkan!');
+        return back()->with('success', 'Komentar pengunjung berhasil dihapus!');
     }
 }

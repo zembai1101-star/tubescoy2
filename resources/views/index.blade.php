@@ -34,23 +34,52 @@
                         </ul>   
                     </div>
                 </div>
-                                            <div class="col-6 col-lg-4 col-md-6 col-sm-6 logo-wrapper text-center">
+                    <div class="col-6 col-lg-4 col-md-6 col-sm-6 logo-wrapper text-center">
                     <a href="{{ route('index.home') }}" class="logo">
                         <!-- Ditambahkan style inline untuk membatasi tinggi logo menjadi 60px dan otomatis menyesuaikan lebar -->
                         <img src="{{ asset('front/img/Fakta Aneh dan Unik.png') }}" alt="Fakta Aneh dan Unik" style="max-height: 60px; width: auto; object-fit: contain;">
                     </a>
                 </div>
                 <div class="col-lg-4 col-md-6 col-sm-6 search-trigger">
-                    <div class="right-button">
-                        <ul>
-                            <li><a id="search" href="javascript:void(0)"><i class="fas fa-search"></i></a></li>
-                            <li><a href="#">About</a></li>
-                            <li><a href="#">Subscribe</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="right-button d-flex justify-content-end align-items-center pr-3">
+        <ul class="list-inline mb-0 d-flex align-items-center" style="gap: 24px;">
+            <li class="list-inline-item m-0">
+                <a id="search" href="javascript:void(0)"><i class="fas fa-search"></i></a>
+            </li>           
+            @auth
+                @if(Auth::user()->role === 'admin')
+                    <li class="list-inline-item m-0">
+                        <a href="{{ route('admin.dashboard') }}" style="color: #28a745; font-weight: bold; white-space: nowrap;">
+                            <i class="fas fa-user-shield"></i> Admin
+                        </a>
+                    </li>
+                @else
+                    <li class="list-inline-item m-0">
+                        <a href="#" style="color: #007bff; font-weight: bold; display: inline-block; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle;" title="{{ Auth::user()->name }}">
+                            <i class="fas fa-user"></i> {{ Auth::user()->name }}
+                        </a>
+                    </li>
+                @endif
+                
+                <li class="list-inline-item m-0">
+                    <a href="#" style="color: #dc3545; font-weight: bold; white-space: nowrap;" 
+                       onclick="event.preventDefault(); document.getElementById('logout-form-top').submit();">
+                        <i class="fas fa-sign-out-alt"></i> Out
+                    </a>
+                </li>
+                <form id="logout-form-top" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    @csrf
+                </form>
+            @else
+                <li class="list-inline-item m-0">
+                    <a href="{{ route('login') }}" style="font-weight: bold; white-space: nowrap;">
+                        <i class="fas fa-user-circle"></i> Sign In
+                    </a>
+                </li>
+            @endauth
+        </ul>
+    </div>
+</div>
         <div class="search_input" id="search_input_box">
             <div class="container">
                 <form class="d-flex justify-content-between search-inner">
@@ -273,26 +302,25 @@
                         <img src="{{ asset('front/img/logo.png') }}" alt="Footer Logo">
                     </div>
                 </div>
+                
+                <div class="col-lg-3 col-sm-6 mb-4 mb-xl-0 single-footer-widget">
+                    <h4>Kolabolator</h4>
+                    <ul>
+                        <p>Hasbi</p>
+                        <p>Tiyo</p>
+                        <p>Rizky</p>
+                    </ul>
+                </div>
 
                 <div class="col-lg-3 col-sm-6 mb-4 mb-xl-0 single-footer-widget">
                     <h4>Contact Info</h4>
                     <div class="footer-address">
-                        <p>Address :Your address goes here, your demo address.</p>
+                        <p>Address : Belitung.</p>
                         <span>Phone : +8880 44338899</span>
-                        <span>Email : info@colorlib.com</span>
+                        <span>Email : anjay@anjay.com</span>
                     </div>
                 </div>
 
-                <div class="col-lg-3 col-sm-6 mb-4 mb-xl-0 single-footer-widget">
-                    <h4>Important Link</h4>
-                    <ul>
-                        <li><a href="#">WHMCS-bridge</a></li>
-                        <li><a href="#">Search Domain</a></li>
-                        <li><a href="#">My Account</a></li>
-                        <li><a href="#">Shopping Cart</a></li>
-                        <li><a href="#">Our Shop</a></li>
-                    </ul>
-                </div>
 
                 <div class="col-lg-3 col-sm-6 col-md-6 mb-4 mb-xl-0 single-footer-widget">
                     <h4>Newsletter</h4>

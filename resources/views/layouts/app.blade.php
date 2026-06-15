@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog Anjay - Admin Panel</title>
+     <link rel="icon" href="{{ asset('front/img/Fakta Aneh dan Unik.png') }}" type="image/png">
+    <title>Fakta Aneh & Unik - Admin </title>
     
     @include('components.header')
 </head>

@@ -10,7 +10,7 @@ class Post extends Model
     use HasFactory;
 
     // Menentukan kolom yang boleh diisi (mass assignment)
-   protected $fillable = ['title', 'slug', 'content', 'status', 'category_id', 'image'];
+    protected $fillable = ['title', 'slug', 'content', 'status', 'category_id', 'image'];
     // 1. Relasi: Sebuah artikel memiliki satu kategori
     public function category()
     {
@@ -26,6 +26,6 @@ class Post extends Model
     // 3. TAMBAHKAN INI: Relasi One-to-Many ke Comment (Agar fitur Komentar tidak Error)
     public function comments()
     {
-        return $this->hasMany(Comment::class);
+        return $this->hasMany(Comment::class)->latest();
     }
 }

@@ -90,7 +90,7 @@
             <i class="nav-icon fas fa-comments"></i>
             <p>
               Komentar
-              <span class="badge badge-info right">5</span>
+              <span class="badge badge-info right">{{ $totalComments }}</span>
             </p>
           </a>
         </li>
