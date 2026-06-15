@@ -70,7 +70,7 @@
                 <div class="card card-teal card-outline">
                     <div class="card-header">
                         <h3 class="card-title mt-1">Kelola Tag</h3>
-                        <button class="btn btn-sm btn-teal float-right" data-toggle="modal" data-target="#modalTambah" onclick="$('#input_type').val('tag'); $('.modal-title-text').text('Tag')">
+                        <button class="btn btn-sm btn-primary float-right" data-toggle="modal" data-target="#modalTambah" onclick="$('#input_type').val('tag'); $('.modal-title-text').text('Tag')">
                             <i class="fas fa-plus mr-1"></i> Tambah Tag
                         </button>
                     </div>
@@ -125,12 +125,12 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label>Nama / Judul</label>
-                        <input type="text" name="name" class="form-control" placeholder="Contoh: Pemrograman / Tips" required>
+                        <input type="text" name="name" class="form-control" placeholder="Contoh: Aneh / Unik" required>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-dark"><i class="fas fa-save mr-1"></i>Simpan</button>
+                    <button type="submit" class="btn btn-dark">Simpan</button>
                 </div>
             </form>
         </div>

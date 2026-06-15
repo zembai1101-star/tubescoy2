@@ -2,11 +2,11 @@
 
 @section('content')
     <div class="tab-empty">
-        <h2 class="display-4">Welcome To blog ini</h2>
+        <h2 class="display-4"><b>Selamat datang di halaman khusus admin</b></h2>
     </div>
     <div class="tab-loading">
         <div>
-            <h2 class="display-4">Tab is anjay <i class="fa fa-sync fa-spin"></i></h2>
+            <h6 class="display-4"><i> sang admin telah tiba</i></h6>
         </div>
     </div>
 @endsection
